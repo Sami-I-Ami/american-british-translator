@@ -4,17 +4,60 @@ const americanToBritishTitles = require("./american-to-british-titles.js")
 const britishOnly = require('./british-only.js')
 
 class Translator {
-    constructor(text, locale) {
-        this.text = text;
-        this.locale = locale;
-    }
-
     highlight(words) {
         return `<span class="highlight">${words}</span>`
     }
 
-    translate() {
+    translate(text, locale) {
+        let words = text.split(" ");
+        let translatedWords = words.map(word => {
+            // check for capitalization or punctuation
+            let isCapitalized = false;
+            let hasPunctuation = false;
+            let punctuation = "";
+            if (/[A-Z]/.test(word[0])) {
+                word = word.toLowerCase();
+                isCapitalized = true;
+            }
+            if (
+                /[^a-z]/.test(word.slice(-1))
+                & !americanToBritishTitles.hasOwnProperty(word) // titles need their punctuation
+            ) {
+                punctuation = word.slice(-1);
+                word = word.slice(0, -1);
+                hasPunctuation = true;
+            }
 
+            // translate and set to highlight
+            let highlightWord = false;
+            if (locale === "american-to-british") {
+                if (americanOnly.hasOwnProperty(word)) {
+                    word = americanOnly[word];
+                    highlightWord = true;
+                } else if (americanToBritishTitles.hasOwnProperty(word)) {
+                    word = americanToBritishTitles[word];
+                    highlightWord = true;
+                } else if (americanToBritishSpelling.hasOwnProperty(word)) {
+                    word = americanToBritishSpelling[word];
+                    highlightWord = true;
+                }         
+            }
+
+            // put back capitalization and punctuation and highlight
+            if (isCapitalized) {
+                word = word[0].toUpperCase() + word.slice(1);
+            }
+            if (hasPunctuation) {
+                word += punctuation;
+            }
+            if (highlightWord) {
+                word = this.highlight(word);
+            }
+
+            return word;
+        });
+        
+        return translatedWords.join(" ");
     }
 }
 
