@@ -10,6 +10,10 @@ module.exports = function (app) {
     .post((req, res) => {
       const {text, locale} = req.body
       const translation = translator.translate(text, locale);
-      res.json({text, translation})
+      if (text === translation) {
+        res.json({text, translation: "Everything looks good to me!"});
+      } else {
+        res.json({text, translation});
+      }
     });
 };
