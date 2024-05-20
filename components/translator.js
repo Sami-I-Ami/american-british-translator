@@ -37,9 +37,25 @@ class Translator {
                 if (americanOnly.hasOwnProperty(word)) {
                     word = americanOnly[word];
                     highlightWord = true;
-                } else if (americanOnly.hasOwnProperty(word + " " + words[i + 1])) {
+                } else if (americanOnly.hasOwnProperty(word + " " + words[i + 1])) { // 2-words
                     word = americanOnly[word + " " + words[i + 1]];
+                    if (/[^a-z]/.test(words[i + 1].slice(-1))) {
+                        punctuation = words[i + 1].slice(-1);
+                        hasPunctuation = true;
+                    }
                     i += 1;
+                    highlightWord = true;
+                } else if (word === "rube") { // special 3 words
+                    if (words[i + 2] === "device") {
+                        word = americanOnly["rube goldberg device"];
+                    } else {
+                        word = americanOnly["rube goldberg machine"];
+                    }
+                    if (/[^a-z]/.test(words[i + 2].slice(-1))) {
+                        punctuation = words[i + 2].slice(-1);
+                        hasPunctuation = true;
+                    }
+                    i += 2;
                     highlightWord = true;
                 } else if (americanToBritishTitles.hasOwnProperty(word)) {
                     word = americanToBritishTitles[word];
@@ -58,11 +74,11 @@ class Translator {
             if (isCapitalized) {
                 word = word[0].toUpperCase() + word.slice(1);
             }
-            if (hasPunctuation) {
-                word += punctuation;
-            }
             if (highlightWord) {
                 word = this.highlight(word);
+            }
+            if (hasPunctuation) {
+                word += punctuation;
             }
 
             translatedWords.push(word);
