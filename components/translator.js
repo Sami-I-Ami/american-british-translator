@@ -10,7 +10,10 @@ class Translator {
 
     translate(text, locale) {
         let words = text.split(" ");
-        let translatedWords = words.map(word => {
+        let translatedWords = [];
+        for (let i = 0; i < words.length; i++) {
+            let word = words[i];
+
             // check for capitalization or punctuation
             let isCapitalized = false;
             let hasPunctuation = false;
@@ -34,13 +37,21 @@ class Translator {
                 if (americanOnly.hasOwnProperty(word)) {
                     word = americanOnly[word];
                     highlightWord = true;
+                } else if (americanOnly.hasOwnProperty(word + " " + words[i + 1])) {
+                    word = americanOnly[word + " " + words[i + 1]];
+                    i += 1;
+                    highlightWord = true;
                 } else if (americanToBritishTitles.hasOwnProperty(word)) {
                     word = americanToBritishTitles[word];
                     highlightWord = true;
                 } else if (americanToBritishSpelling.hasOwnProperty(word)) {
                     word = americanToBritishSpelling[word];
                     highlightWord = true;
-                }         
+                } else if (/[0-9]+:[0-9]+/.test(word)) {
+                    const parts = word.split(":");
+                    word = parts[0] + "." + parts[1];
+                    highlightWord = true;
+                }      
             }
 
             // put back capitalization and punctuation and highlight
@@ -54,9 +65,9 @@ class Translator {
                 word = this.highlight(word);
             }
 
-            return word;
-        });
-        
+            translatedWords.push(word);
+        }
+
         return translatedWords.join(" ");
     }
 }
