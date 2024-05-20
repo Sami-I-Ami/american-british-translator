@@ -23,7 +23,7 @@ class Translator {
                 isCapitalized = true;
             }
             if (
-                /[^a-z]/.test(word.slice(-1))
+                /[^a-z0-9]/.test(word.slice(-1))
                 & !americanToBritishTitles.hasOwnProperty(word) // titles need their punctuation
             ) {
                 punctuation = word.slice(-1);
