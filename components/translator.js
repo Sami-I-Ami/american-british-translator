@@ -13,7 +13,7 @@ class Translator {
         return `<span class="highlight">${words}</span>`
     }
 
-    translate(text, locale) {
+    translate(text, locale, highlightWords) {
         let words = text.split(" ");
         let translatedWords = [];
         for (let i = 0; i < words.length; i++) {
@@ -111,7 +111,7 @@ class Translator {
             if (isCapitalized) {
                 word = word[0].toUpperCase() + word.slice(1);
             }
-            if (highlightWord) {
+            if (highlightWord & highlightWords) {
                 word = this.highlight(word);
             }
             if (hasPunctuation) {

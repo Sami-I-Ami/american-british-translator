@@ -25,7 +25,7 @@ module.exports = function (app) {
         return;
       }
 
-      let translation = translator.translate(text, locale);
+      let translation = translator.translate(text, locale, true);
       if (translation == text) {
         translation = "Everything looks good to me!";
       }
