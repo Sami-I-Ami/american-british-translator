@@ -22,30 +22,36 @@ class Translator {
             // check for capitalization or punctuation
             let isCapitalized = false;
             let hasPunctuation = false;
-            let punctuation = "";
+            let punctuation;
             if (/[A-Z]/.test(word[0])) {
                 word = word[0].toLowerCase() + word.slice(1);
                 isCapitalized = true;
             }
             if (
-                /[^a-z0-9]/.test(word.slice(-1))
+                /[^A-Za-z0-9]/.test(word.slice(-1))
                 & !americanToBritishTitles.hasOwnProperty(word) // titles need their punctuation
             ) {
                 punctuation = word.slice(-1);
                 word = word.slice(0, -1);
                 hasPunctuation = true;
             }
-
+            
             // translate and set to highlight
             let highlightWord = false;
+            let secondWord = words[i + 1];
+            if (secondWord) {
+                if (/[^A-Za-z]/.test(secondWord.slice(-1))) { // test if the 2nd word has punctuation
+                    punctuation = secondWord.slice(-1);
+                    secondWord = secondWord.slice(0, -1);
+                }
+            }
             if (locale === "american-to-british") {
                 if (americanOnly.hasOwnProperty(word)) {
                     word = americanOnly[word];
                     highlightWord = true;
-                } else if (americanOnly.hasOwnProperty(word + " " + words[i + 1])) { // 2-words
-                    word = americanOnly[word + " " + words[i + 1]];
-                    if (/[^a-z]/.test(words[i + 1].slice(-1))) {
-                        punctuation = words[i + 1].slice(-1);
+                } else if (americanOnly.hasOwnProperty(word + " " + secondWord)) { // 2-words
+                    word = americanOnly[word + " " + secondWord];
+                    if (punctuation) {
                         hasPunctuation = true;
                     }
                     i += 1;
@@ -77,16 +83,19 @@ class Translator {
                 if (britishOnly.hasOwnProperty(word)) {
                     word = britishOnly[word];
                     highlightWord = true;
-                } else if (britishOnly.hasOwnProperty(word + " " + words[i + 1])) { // 2-words
-                    word = britishOnly[word + " " + words[i + 1]];
-                    if (/[^a-z]/.test(words[i + 1].slice(-1))) {
-                        punctuation = words[i + 1].slice(-1);
+                } else if (britishOnly.hasOwnProperty(word + " " + secondWord)) { // 2-words
+                    word = britishOnly[word + " " + secondWord];
+                    if (punctuation) {
                         hasPunctuation = true;
                     }
                     i += 1;
                     highlightWord = true;
-                } else if (word === "heath") { // special 3 words
-                    word = britishOnly["heath robinson device"]
+                } else if (word === "heath" | word === "bits") { // special 3 words
+                    if (word === "heath") {
+                        word = britishOnly["heath robinson device"]
+                    } else {
+                        word = britishOnly["bits and bobs"]
+                    }
                     if (/[^a-z]/.test(words[i + 2].slice(-1))) {
                         punctuation = words[i + 2].slice(-1);
                         hasPunctuation = true;
