@@ -39,19 +39,22 @@ class Translator {
             // translate and set to highlight
             let highlightWord = false;
             let secondWord = words[i + 1];
+            let possiblePunctuation;
             if (secondWord) {
                 if (/[^A-Za-z]/.test(secondWord.slice(-1))) { // test if the 2nd word has punctuation
-                    punctuation = secondWord.slice(-1);
+                    possiblePunctuation = secondWord.slice(-1);
                     secondWord = secondWord.slice(0, -1);
                 }
             }
+            
             if (locale === "american-to-british") {
                 if (americanOnly.hasOwnProperty(word)) {
                     word = americanOnly[word];
                     highlightWord = true;
                 } else if (americanOnly.hasOwnProperty(word + " " + secondWord)) { // 2-words
                     word = americanOnly[word + " " + secondWord];
-                    if (punctuation) {
+                    if (possiblePunctuation) {
+                        punctuation = possiblePunctuation;
                         hasPunctuation = true;
                     }
                     i += 1;
@@ -85,7 +88,8 @@ class Translator {
                     highlightWord = true;
                 } else if (britishOnly.hasOwnProperty(word + " " + secondWord)) { // 2-words
                     word = britishOnly[word + " " + secondWord];
-                    if (punctuation) {
+                    if (possiblePunctuation) {
+                        punctuation = possiblePunctuation;
                         hasPunctuation = true;
                     }
                     i += 1;
@@ -104,7 +108,6 @@ class Translator {
                     highlightWord = true;
                 } else if (Object.values(americanToBritishTitles).includes(word)) {
                     word = this.getKeyByValue(americanToBritishTitles, word);
-                    console.log(word);
                     highlightWord = true;
                 } else if (Object.values(americanToBritishSpelling).includes(word)) {
                     word = this.getKeyByValue(americanToBritishSpelling, word);
