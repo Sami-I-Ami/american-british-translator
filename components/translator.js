@@ -78,7 +78,7 @@ class Translator {
                     word = britishOnly[word];
                     highlightWord = true;
                 } else if (britishOnly.hasOwnProperty(word + " " + words[i + 1])) { // 2-words
-                    word = americanOnly[word + " " + words[i + 1]];
+                    word = britishOnly[word + " " + words[i + 1]];
                     if (/[^a-z]/.test(words[i + 1].slice(-1))) {
                         punctuation = words[i + 1].slice(-1);
                         hasPunctuation = true;
