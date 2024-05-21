@@ -4,6 +4,11 @@ const americanToBritishTitles = require("./american-to-british-titles.js")
 const britishOnly = require('./british-only.js')
 
 class Translator {
+    // snippet from stack overflow
+    getKeyByValue(object, value) {
+        return Object.keys(object).find(key => object[key] === value);
+    }
+    
     highlight(words) {
         return `<span class="highlight">${words}</span>`
     }
@@ -19,7 +24,7 @@ class Translator {
             let hasPunctuation = false;
             let punctuation = "";
             if (/[A-Z]/.test(word[0])) {
-                word = word.toLowerCase();
+                word = word[0].toLowerCase() + word.slice(1);
                 isCapitalized = true;
             }
             if (
@@ -66,6 +71,38 @@ class Translator {
                 } else if (/[0-9]+:[0-9]+/.test(word)) {
                     const parts = word.split(":");
                     word = parts[0] + "." + parts[1];
+                    highlightWord = true;
+                }      
+            } else if (locale === "british-to-american") {
+                if (britishOnly.hasOwnProperty(word)) {
+                    word = britishOnly[word];
+                    highlightWord = true;
+                } else if (britishOnly.hasOwnProperty(word + " " + words[i + 1])) { // 2-words
+                    word = americanOnly[word + " " + words[i + 1]];
+                    if (/[^a-z]/.test(words[i + 1].slice(-1))) {
+                        punctuation = words[i + 1].slice(-1);
+                        hasPunctuation = true;
+                    }
+                    i += 1;
+                    highlightWord = true;
+                } else if (word === "heath") { // special 3 words
+                    word = britishOnly["heath robinson device"]
+                    if (/[^a-z]/.test(words[i + 2].slice(-1))) {
+                        punctuation = words[i + 2].slice(-1);
+                        hasPunctuation = true;
+                    }
+                    i += 2;
+                    highlightWord = true;
+                } else if (Object.values(americanToBritishTitles).includes(word)) {
+                    word = this.getKeyByValue(americanToBritishTitles, word);
+                    console.log(word);
+                    highlightWord = true;
+                } else if (Object.values(americanToBritishSpelling).includes(word)) {
+                    word = this.getKeyByValue(americanToBritishSpelling, word);
+                    highlightWord = true;
+                } else if (/[0-9]+.[0-9]+/.test(word)) {
+                    const parts = word.split(".");
+                    word = parts[0] + ":" + parts[1];
                     highlightWord = true;
                 }      
             }

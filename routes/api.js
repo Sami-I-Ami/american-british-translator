@@ -9,14 +9,14 @@ module.exports = function (app) {
   app.route('/api/translate')
     .post((req, res) => {
       const {text, locale} = req.body;
-      
-      if (text === "" | !locale) {
-        res.json({error: "Required field(s) missing"});
+
+      if (text === "") {
+        res.json({error: "No text to translate"});
         return;
       }
-
-      if (!text.trim()) {
-        res.json({error: "No text to translate"});
+      
+      if (!text | !locale) {
+        res.json({error: "Required field(s) missing"});
         return;
       }
 
@@ -25,11 +25,11 @@ module.exports = function (app) {
         return;
       }
 
-      const translation = translator.translate(text, locale);
-      if (text === translation) {
-        res.json({text, translation: "Everything looks good to me!"});
-      } else {
-        res.json({text, translation});
+      let translation = translator.translate(text, locale);
+      if (translation == text) {
+        translation = "Everything looks good to me!";
       }
+      res.json({text, translation});
+      
     });
 };
